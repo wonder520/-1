@@ -1,5 +1,6 @@
 package com.xmcc.service.Impl;
 
+import com.xmcc.common.ProductEnums;
 import com.xmcc.common.ResultEnums;
 import com.xmcc.common.ResultResponse;
 import com.xmcc.dto.ProductCategoryDto;
@@ -8,11 +9,14 @@ import com.xmcc.entity.ProductInfo;
 import com.xmcc.repository.ProductInfoRespository;
 import com.xmcc.service.ProductCategoryService;
 import com.xmcc.service.ProductInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,4 +56,36 @@ public class ProductInfoServiceImpl implements ProductInfoService {
         return ResultResponse.success(finalResultList);
 
     }
+
+    @Override
+    public ResultResponse<ProductInfo> queryById(String productId) {
+        //使用common-lang3 jar的类
+        if (StringUtils.isBlank(productId)){
+            return ResultResponse.fail(ResultEnums.PARAM_ERROR.getMsg()+":"+productId);
+        }
+
+        Optional<ProductInfo> byId = productInfoRespository.findById(productId);
+
+        /**判断操作类是否存在*/
+        if (!byId.isPresent()){
+            return ResultResponse.fail(productId+":"+ResultEnums.NOT_EXITS.getMsg());
+        }
+
+        //解开Optional封装
+        ProductInfo productInfo = byId.get();
+
+        //判断商品是否下架
+        if (productInfo.getProductStatus() == ProductEnums.PRODUCT_DOWN.getCode()){
+            return ResultResponse.fail(ProductEnums.PRODUCT_DOWN.getMsg());
+        }
+
+        return ResultResponse.success(productInfo);
+    }
+
+    @Override
+    @Transactional
+    public void updateProduct(ProductInfo productInfo) {
+        productInfoRespository.save(productInfo);
+    }
+
 }
