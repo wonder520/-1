@@ -35,13 +35,13 @@ public class OrderMasterServiceImpl implements OrderMasterService {
     private OrderDetailService orderDetailService;
 
     @Override
-    @Transactional//增删改除法事物
+    @Transactional//增删改触发事务
     public ResultResponse insertOrder(OrderMasterDto orderMasterDto) {
 
         //取出订单项即可
         List<OrderDetailDto> items = orderMasterDto.getItems();
 
-        //创建订单detail集合 将符合的放入其中 等待批量插入
+        //创建订单detail集合 将符合条件的放入其中 等待批量插入
         List<OrderDetail> orderDetailList = Lists.newArrayList();
 
         //创建订单总金额为0 涉及到钱的都用 高精度计算

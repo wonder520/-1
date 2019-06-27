@@ -1,7 +1,6 @@
 package com.xmcc;
 
-import com.google.common.collect.Lists;
-import com.xmcc.entity.ProductCategory;
+import com.xmcc.repository.OrderPageListRepository;
 import com.xmcc.repository.ProductCategoryRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -18,6 +16,8 @@ public class WxSellApplicationTests {
 
     @Autowired
     private ProductCategoryRepository productCategoryRepository;
+    @Autowired
+    private OrderPageListRepository orderPageListRepository;
 
 
     @Test
@@ -30,8 +30,19 @@ public class WxSellApplicationTests {
 
     @Test
     public void findByTypeIn(){
-        List<ProductCategory> categories= productCategoryRepository.findByCategoryTypeIn(Lists.newArrayList(1,2,3));
-        categories.stream().forEach(System.out::println);
+
+//        Pageable pageable = PageRequest.of(1,10);
+//        Page<OrderMaster> all= orderPageListRepository.findAllByOpenid(243520394, pageable);
+//
+//        List<OrderMaster> list = all.getContent();
+//        OrderListDto orderListDto = new OrderListDto();
+//        List<OrderListDto> collect = list.stream().map(orderMaster -> orderListDto.build(orderMaster)).collect(Collectors.toList());
+//        Page<OrderListDto> page = new PageImpl(collect);
+//
+//        List<OrderListDto> content = page.getContent();
+//
+//        System.out.println(content);
+
     }
 
 }
