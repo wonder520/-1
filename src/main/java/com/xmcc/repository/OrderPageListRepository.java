@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface OrderPageListRepository extends JpaRepository<OrderMaster,Integer> {
     @Query(value = "select * from order_master where buyer_openid = :openid",nativeQuery = true)
-    Page<OrderMaster> findAllByOpenid(@Param("openid") Integer openid, Pageable pageable);
+    Page<OrderMaster> findAllByOpenid(@Param("openid") String openid, Pageable pageable);
     @Query(value = "select * from order_master where buyer_openid = :openid",nativeQuery = true)
-    List<OrderMaster> findAllByOpenidIn(@Param("openid") Integer openid);
+    List<OrderMaster> findAllByOpenidIn(@Param("openid") String openid);
 }

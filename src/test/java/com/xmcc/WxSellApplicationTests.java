@@ -1,5 +1,13 @@
 package com.xmcc;
 
+import com.google.common.collect.Lists;
+import com.xmcc.Utils.DateToStringUtils;
+import com.xmcc.dto.OrderDetailListDto;
+import com.xmcc.dto.OrderListDto;
+import com.xmcc.entity.OrderDetail;
+import com.xmcc.entity.OrderMaster;
+import com.xmcc.repository.OrderDetailRepository;
+import com.xmcc.repository.OrderMasterRepository;
 import com.xmcc.repository.OrderPageListRepository;
 import com.xmcc.repository.ProductCategoryRepository;
 import org.junit.Test;
@@ -18,7 +26,10 @@ public class WxSellApplicationTests {
     private ProductCategoryRepository productCategoryRepository;
     @Autowired
     private OrderPageListRepository orderPageListRepository;
-
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
+    @Autowired
+    private OrderMasterRepository orderMasterRepository;
 
     @Test
     public void contextLoads() {
@@ -42,6 +53,32 @@ public class WxSellApplicationTests {
 //        List<OrderListDto> content = page.getContent();
 //
 //        System.out.println(content);
+
+        OrderDetail orderDetail = orderDetailRepository.findByOrderId("0bd39361cc914a78a39562c9f3765cc0");
+
+        OrderMaster orderMaster  = orderMasterRepository.findByOrderIdAndBuyerOpenid("0bd39361cc914a78a39562c9f3765cc0", "243520394");
+
+        OrderDetailListDto orderDetailListDto = OrderDetailListDto.builder().detailId(orderDetail.getDetailId())
+                .orderId(orderDetail.getOrderId()).productId(orderDetail.getProductId()).productName(orderDetail.getProductName())
+                .productPrice(orderDetail.getProductPrice()).productQuantity(orderDetail.getProductQuantity())
+                .productIcon(orderDetail.getProductIcon()).productImage(orderDetail.getProductIcon()).build();
+
+        List<OrderDetailListDto> orderDetailList = Lists.newArrayList();
+        orderDetailList.add(orderDetailListDto);
+
+        List<OrderListDto> orderListDtoList= Lists.newArrayList();
+
+
+
+        OrderListDto orderListDto = OrderListDto.builder().orderId(orderMaster.getOrderId())
+                .buyerName(orderMaster.getBuyerName()).buyerPhone(orderMaster.getBuyerPhone())
+                .orderAmount(orderMaster.getOrderAmount()).orderStatus(orderMaster.getOrderStatus())
+                .payStatus(orderMaster.getPayStatus()).createTime(DateToStringUtils.datetoString(orderMaster.getCreateTime()))
+                .updateTime(DateToStringUtils.datetoString(orderMaster.getUpdateTime())).orderDetailList(orderDetailList).build();
+        orderListDtoList.add(orderListDto);
+
+        System.out.println(":::::::::"+orderDetailList);
+        System.out.println("::::::::::"+orderListDtoList);
 
     }
 

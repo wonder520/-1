@@ -52,4 +52,12 @@ public class OrderMasterController {
         return orderMasterService.insertOrder(orderMasterDto);
     }
 
+    @PostMapping("cancel")
+    @ApiOperation(value = "取消订单订单接口",httpMethod = "POST",response = ResultResponse.class)
+    public ResultResponse cancel(String openid,String orderId){
+
+        return orderMasterService.cancelOrderList(openid,orderId);
+    }
+
+
 }

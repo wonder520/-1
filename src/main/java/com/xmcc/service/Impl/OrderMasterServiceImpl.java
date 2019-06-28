@@ -11,6 +11,7 @@ import com.xmcc.entity.OrderDetail;
 import com.xmcc.entity.OrderMaster;
 import com.xmcc.entity.ProductInfo;
 import com.xmcc.exception.CustomException;
+import com.xmcc.repository.OrderDetailRepository;
 import com.xmcc.repository.OrderMasterRepository;
 import com.xmcc.service.OrderDetailService;
 import com.xmcc.service.OrderMasterService;
@@ -29,6 +30,8 @@ public class OrderMasterServiceImpl implements OrderMasterService {
 
     @Autowired
     private OrderMasterRepository orderMasterRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
     @Autowired
     private ProductInfoService productInfoService;
     @Autowired
@@ -106,5 +109,38 @@ public class OrderMasterServiceImpl implements OrderMasterService {
         map.put("orderId",orderId);
 
         return ResultResponse.success(map);
+    }
+
+    @Override
+    @Transactional
+    public ResultResponse cancelOrderList(String openid, String orderId) {
+
+        OrderDetail detail = orderDetailRepository.findByOrderId(orderId);
+        ResultResponse<ProductInfo> resultResponse = productInfoService.queryById(detail.getProductId());
+
+        //如果该商品未查询到 取消订单失败,因为这儿涉及到事务 需要抛出异常 事务机制是遇到异常才会回滚
+        if (resultResponse.getCode() == ResultEnums.FAIL.getCode()){
+            throw new CustomException(resultResponse.getMsg());
+        }
+
+
+        //获得查询的商品
+        ProductInfo productInfo = resultResponse.getData();
+
+        //改变订单状态
+        OrderMaster orderMaster = orderMasterRepository.findByOrderIdAndBuyerOpenid(orderId, openid);
+        //判断订单状态
+        if (orderMaster.getOrderStatus()==OrderEnums.CANCEL.getCode()){
+            return ResultResponse.fail(OrderEnums.FINSH_CANCEL.getMsg());
+        }
+        orderMaster.setOrderStatus(OrderEnums.CANCEL.getCode());
+
+        orderMasterRepository.save(orderMaster);
+
+        //返还商品数量
+        productInfo.setProductStock(detail.getProductQuantity()+productInfo.getProductStock());
+        productInfoService.updateProduct(productInfo);
+
+        return ResultResponse.success();
     }
 }

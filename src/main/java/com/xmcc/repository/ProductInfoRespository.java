@@ -2,9 +2,11 @@ package com.xmcc.repository;
 
 import com.xmcc.entity.ProductInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ProductInfoRespository extends JpaRepository<ProductInfo,String> {
 
     //根据类目编号 查询正常上架的商品
